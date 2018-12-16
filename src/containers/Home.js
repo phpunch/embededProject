@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { Button, Container } from "semantic-ui-react";
+import { Button, Container, Grid } from "semantic-ui-react";
 import Chart from "../components/LineChart";
-import CurrentData from "../components/CurrentData";
 import Table from "../components/Table";
-import Header from '../components/Header';
+import Header from "../components/Header";
+import List from '../components/List'
 
 class Home extends Component {
   state = {
@@ -23,8 +23,8 @@ class Home extends Component {
     let dataObj = values.data;
     const switchObj = values.switch;
     //console.log(obj)
-    let dataArray = []
-    let currentData = null
+    let dataArray = [];
+    let currentData = null;
     if (dataObj) {
       dataArray = Object.keys(dataObj).map(key => {
         return {
@@ -35,12 +35,12 @@ class Home extends Component {
       //console.log(x)
       const size = dataArray.length;
       currentData = dataArray[size - 1];
-      dataArray = dataArray.slice(size - 12, size);
+      if (size > 12) {
+        dataArray = dataArray.slice(size - 12, size);
+      }
     } else {
-      dataArray = []
+      dataArray = [];
     }
-
-    //console.log(x);
     this.setState({
       data: dataArray,
       isAirConditionOn: switchObj.airCondition,
@@ -86,76 +86,63 @@ class Home extends Component {
     });
   };
 
+  deleteDataHandler = () => {
+    const dbCon = this.props.db.database().ref("/data");
+    dbCon
+      .remove()
+      .then(console.log("Removed Data"))
+      .catch(err => console.log(err));
+  };
+
   render() {
-    let switchAirConditionButton = (
-      <Button onClick={this.turnOnAirConditionHandler}>
-        Turn Air Condition On
-      </Button>
-    );
-    if (this.state.isAirConditionOn) {
-      switchAirConditionButton = (
-        <Button onClick={this.turnOffAirConditionHandler}>
-          Turn Air Condition Off
-        </Button>
-      );
-    }
-    let switchAirPurifierButton = (
-      <Button onClick={this.turnOnAirPurifierHandler}>
-        Turn Air Purifier On
-      </Button>
-    );
-    if (this.state.isAirPurifierOn) {
-      switchAirPurifierButton = (
-        <Button onClick={this.turnOffAirPurifierHandler}>
-          Turn Air Purifier Off
-        </Button>
-      );
-    }
-    let showData = <div>Loading</div>;
-    if (this.state.data) {
-      showData = this.state.data.map(obj => {
-        return Object.keys(obj).map(key => {
-          return (
-            <div key={obj + key}>
-              {key} : {obj[key]}
-            </div>
-          );
-        });
-      });
-    }
-    let currentData = <div>loading</div>;
+    let deleteButton = <Button disabled>Delete Data</Button>;
+    let listData = <List humidity="?" dust="?"/>
     if (this.state.currentData) {
-      currentData = (
-        <CurrentData
-          humidity={this.state.currentData.humidity}
-          dust={this.state.currentData.dust}
-        />
+      listData = (
+        <List humidity={this.state.currentData.humidity} dust={this.state.currentData.dust}
+        airConditionChecked={this.state.isAirConditionOn} 
+        airConditionOnFunction={this.turnOnAirConditionHandler} 
+        airConditionOffFunction={this.turnOffAirConditionHandler}
+        airPurifierChecked={this.state.isAirPurifierOn} 
+        airPurifierOnFunction={this.turnOnAirPurifierHandler} 
+        airPurifierOffFunction={this.turnOffAirPurifierHandler}/>
+      )
+      deleteButton = (
+        <Button onClick={this.deleteDataHandler}>Delete Data</Button>
       );
     }
     return (
-      <Container>
-        <Header />
-        {currentData}
-        Air Condition : {this.state.isAirConditionOn ? <p>On</p> : <p>Off</p>}
-        Air Purifier : {this.state.isAirPurifierOn ? <p>On</p> : <p>Off</p>}
-        {switchAirConditionButton}
-        {switchAirPurifierButton}
-        <Button onClick={this.request}>Simulate data</Button>
-        <Chart
-          stroke="#8884d8"
-          data={this.state.data}
-          dataKey="humidity"
-          isAnimationActive={false}
-        />
-        <Chart
-          stroke="#82ca9d"
-          data={this.state.data}
-          dataKey="dust"
-          isAnimationActive={false}
-        />
-        <Table data={this.state.data} />
-        {showData}
-      </Container>
+      <div>
+        <Container style={{ margin: "3em" }}>
+          <Header />
+          {listData}
+          <Button onClick={this.request}>Simulate data</Button>
+          {deleteButton}
+        </Container>
+        <Grid>
+          <Grid.Row>
+            <Grid.Column width={8}>
+              <Chart
+                stroke="#8884d8"
+                data={this.state.data}
+                dataKey="humidity"
+                isAnimationActive={false}
+              />
+            </Grid.Column>
+            <Grid.Column width={8}>
+              <Chart
+                stroke="#82ca9d"
+                data={this.state.data}
+                dataKey="dust"
+                isAnimationActive={false}
+              />
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+        <Container style={{ margin: "2em" }}>
+          <Table data={this.state.data} />
+        </Container>
+      </div>
     );
   }
 }
