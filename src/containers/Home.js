@@ -3,7 +3,7 @@ import { Button, Container, Grid } from "semantic-ui-react";
 import Chart from "../components/LineChart";
 import Table from "../components/Table";
 import Header from "../components/Header";
-import List from '../components/List'
+import List from "../components/List";
 
 class Home extends Component {
   state = {
@@ -96,17 +96,31 @@ class Home extends Component {
 
   render() {
     let deleteButton = <Button disabled>Delete Data</Button>;
-    let listData = <List humidity="?" dust="?"/>
+    let listData = (
+      <List
+        humidity="?"
+        dust="?"
+        airConditionChecked={this.state.isAirConditionOn}
+        airConditionOnFunction={this.turnOnAirConditionHandler}
+        airConditionOffFunction={this.turnOffAirConditionHandler}
+        airPurifierChecked={this.state.isAirPurifierOn}
+        airPurifierOnFunction={this.turnOnAirPurifierHandler}
+        airPurifierOffFunction={this.turnOffAirPurifierHandler}
+      />
+    );
     if (this.state.currentData) {
       listData = (
-        <List humidity={this.state.currentData.humidity} dust={this.state.currentData.dust}
-        airConditionChecked={this.state.isAirConditionOn} 
-        airConditionOnFunction={this.turnOnAirConditionHandler} 
-        airConditionOffFunction={this.turnOffAirConditionHandler}
-        airPurifierChecked={this.state.isAirPurifierOn} 
-        airPurifierOnFunction={this.turnOnAirPurifierHandler} 
-        airPurifierOffFunction={this.turnOffAirPurifierHandler}/>
-      )
+        <List
+          humidity={this.state.currentData.humidity}
+          dust={this.state.currentData.dust}
+          airConditionChecked={this.state.isAirConditionOn}
+          airConditionOnFunction={this.turnOnAirConditionHandler}
+          airConditionOffFunction={this.turnOffAirConditionHandler}
+          airPurifierChecked={this.state.isAirPurifierOn}
+          airPurifierOnFunction={this.turnOnAirPurifierHandler}
+          airPurifierOffFunction={this.turnOffAirPurifierHandler}
+        />
+      );
       deleteButton = (
         <Button onClick={this.deleteDataHandler}>Delete Data</Button>
       );
