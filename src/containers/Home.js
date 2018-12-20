@@ -10,8 +10,9 @@ class Home extends Component {
   state = {
     isAirConditionOn: false,
     isAirPurifierOn: false,
-    humidityThreshold: 0.5,
-    dustThreshold: 0.5,
+    humidityThreshold: 0.6,
+    dustThreshold: 0.1,
+    tempThreshold: 30,
     data: null,
     currentData: null
   };
@@ -113,6 +114,13 @@ class Home extends Component {
         threshold={this.state.humidityThreshold}
       />
     );
+    let temperatureCircle = (
+      <PercentageCircle
+        name="Temperature"
+        percentage={0}
+        threshold={this.state.tempThreshold}
+      />
+    );
     let controller = (
       <Controller
         airConditionChecked={this.state.isAirConditionOn}
@@ -141,6 +149,13 @@ class Home extends Component {
           threshold={this.state.dustThreshold}
         />
       );
+      temperatureCircle = (
+        <PercentageCircle
+          name="Temperature"
+          percentage={this.state.currentData.temperature}
+          threshold={this.state.tempThreshold}
+        />
+      );
       controller = (
         <Controller
           airConditionChecked={this.state.isAirConditionOn}
@@ -159,11 +174,12 @@ class Home extends Component {
         </Container>
         <Grid>
           <Grid.Row>
-            <Grid.Column width={2} />
+            <Grid.Column width={1} />
             <Grid.Column width={2}>{humidityCircle}</Grid.Column>
             <Grid.Column width={2}>{dustCircle}</Grid.Column>
+            <Grid.Column width={2}>{temperatureCircle}</Grid.Column>
             <Grid.Column width={1} />
-            <Grid.Column width={9}>{controller}</Grid.Column>
+            <Grid.Column width={8}>{controller}</Grid.Column>
           </Grid.Row>
           <Grid.Row centered>
             <Button onClick={this.request}>Simulate data</Button>
