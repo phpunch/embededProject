@@ -5,6 +5,7 @@
   "dependencies": {
     "firebase": "^5.7.0",
     "react": "^16.6.3",
+    "react-circular-progressbar": "^1.0.0",
     "react-dom": "^16.6.3",
     "react-scripts": "2.1.1",
     "recharts": "^1.4.1",

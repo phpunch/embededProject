@@ -4,6 +4,8 @@ import Chart from "../components/LineChart";
 import Table from "../components/Table";
 import Header from "../components/Header";
 import List from "../components/List";
+import PercentageCircle from "../components/PercentageCircle";
+import Controller from "../containers/Controller";
 
 class Home extends Component {
   state = {
@@ -108,6 +110,8 @@ class Home extends Component {
         airPurifierOffFunction={this.turnOffAirPurifierHandler}
       />
     );
+    let humidityCircle = <p>Loading</p>;
+    let dustCircle = <p>Loading</p>;
     if (this.state.currentData) {
       listData = (
         <List
@@ -124,16 +128,47 @@ class Home extends Component {
       deleteButton = (
         <Button onClick={this.deleteDataHandler}>Delete Data</Button>
       );
+      humidityCircle = (
+        <PercentageCircle
+          name="Humidity"
+          percentage={this.state.currentData.humidity}
+        />
+      );
+      dustCircle = (
+        <PercentageCircle
+          name="Dust Density"
+          percentage={this.state.currentData.dust}
+        />
+      );
     }
     return (
       <div>
         <Container style={{ margin: "3em" }}>
           <Header />
+
           {listData}
           <Button onClick={this.request}>Simulate data</Button>
           {deleteButton}
         </Container>
         <Grid>
+          <Grid.Row>
+            <Grid.Column width={2} />
+            <Grid.Column width={2}>{humidityCircle}</Grid.Column>
+            <Grid.Column width={2}>{dustCircle}</Grid.Column>
+            <Grid.Column width={2} />
+            <Grid.Column width={8}>
+              <Controller
+                humidity="?"
+                dust="?"
+                airConditionChecked={this.state.isAirConditionOn}
+                airConditionOnFunction={this.turnOnAirConditionHandler}
+                airConditionOffFunction={this.turnOffAirConditionHandler}
+                airPurifierChecked={this.state.isAirPurifierOn}
+                airPurifierOnFunction={this.turnOnAirPurifierHandler}
+                airPurifierOffFunction={this.turnOffAirPurifierHandler}
+              />
+            </Grid.Column>
+          </Grid.Row>
           <Grid.Row>
             <Grid.Column width={8}>
               <Chart
