@@ -7,7 +7,7 @@ import AirPurifierImg from '../img/air-purifier.png'
 class Controller extends Component {
   render() {
     return (
-      <div>
+      <Card.Group>
         <Card >
           <Card.Content header="Air Condition" />
           <Card.Content>
@@ -39,7 +39,7 @@ class Controller extends Component {
             />
           </Card.Content>
         </Card>
-      </div>
+      </Card.Group>
     );
   }
 }

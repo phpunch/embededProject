@@ -3,7 +3,6 @@ import { Button, Container, Grid } from "semantic-ui-react";
 import Chart from "../components/LineChart";
 import Table from "../components/Table";
 import Header from "../components/Header";
-import List from "../components/List";
 import PercentageCircle from "../components/PercentageCircle";
 import Controller from "../containers/Controller";
 
@@ -11,6 +10,8 @@ class Home extends Component {
   state = {
     isAirConditionOn: false,
     isAirPurifierOn: false,
+    humidityThreshold: 0.5,
+    dustThreshold: 0.5,
     data: null,
     currentData: null
   };
@@ -24,17 +25,16 @@ class Home extends Component {
   getData(values) {
     let dataObj = values.data;
     const switchObj = values.switch;
-    //console.log(obj)
     let dataArray = [];
     let currentData = null;
     if (dataObj) {
       dataArray = Object.keys(dataObj).map(key => {
         return {
           humidity: dataObj[key].humidity,
-          dust: dataObj[key].dust
+          dust: dataObj[key].dust,
+          temperature: dataObj[key].temperature
         };
       });
-      //console.log(x)
       const size = dataArray.length;
       currentData = dataArray[size - 1];
       if (size > 12) {
@@ -54,7 +54,8 @@ class Home extends Component {
   request = () => {
     const req = {
       humidity: Math.random(),
-      dust: Math.random()
+      dust: Math.random(),
+      temperature: Math.random()
     };
     const dbCon = this.props.db.database().ref("/data");
     dbCon.push(req);
@@ -98,10 +99,22 @@ class Home extends Component {
 
   render() {
     let deleteButton = <Button disabled>Delete Data</Button>;
-    let listData = (
-      <List
-        humidity="?"
-        dust="?"
+    let humidityCircle = (
+      <PercentageCircle
+        name="Humidity"
+        percentage={0}
+        threshold={this.state.humidityThreshold}
+      />
+    );
+    let dustCircle = (
+      <PercentageCircle
+        name="Dust Density"
+        percentage={0}
+        threshold={this.state.humidityThreshold}
+      />
+    );
+    let controller = (
+      <Controller
         airConditionChecked={this.state.isAirConditionOn}
         airConditionOnFunction={this.turnOnAirConditionHandler}
         airConditionOffFunction={this.turnOffAirConditionHandler}
@@ -110,13 +123,26 @@ class Home extends Component {
         airPurifierOffFunction={this.turnOffAirPurifierHandler}
       />
     );
-    let humidityCircle = <p>Loading</p>;
-    let dustCircle = <p>Loading</p>;
     if (this.state.currentData) {
-      listData = (
-        <List
-          humidity={this.state.currentData.humidity}
-          dust={this.state.currentData.dust}
+      deleteButton = (
+        <Button onClick={this.deleteDataHandler}>Delete Data</Button>
+      );
+      humidityCircle = (
+        <PercentageCircle
+          name="Humidity"
+          percentage={this.state.currentData.humidity}
+          threshold={this.state.humidityThreshold}
+        />
+      );
+      dustCircle = (
+        <PercentageCircle
+          name="Dust Density"
+          percentage={this.state.currentData.dust}
+          threshold={this.state.dustThreshold}
+        />
+      );
+      controller = (
+        <Controller
           airConditionChecked={this.state.isAirConditionOn}
           airConditionOnFunction={this.turnOnAirConditionHandler}
           airConditionOffFunction={this.turnOffAirConditionHandler}
@@ -125,49 +151,23 @@ class Home extends Component {
           airPurifierOffFunction={this.turnOffAirPurifierHandler}
         />
       );
-      deleteButton = (
-        <Button onClick={this.deleteDataHandler}>Delete Data</Button>
-      );
-      humidityCircle = (
-        <PercentageCircle
-          name="Humidity"
-          percentage={this.state.currentData.humidity}
-        />
-      );
-      dustCircle = (
-        <PercentageCircle
-          name="Dust Density"
-          percentage={this.state.currentData.dust}
-        />
-      );
     }
     return (
       <div>
         <Container style={{ margin: "3em" }}>
           <Header />
-
-          {listData}
-          <Button onClick={this.request}>Simulate data</Button>
-          {deleteButton}
         </Container>
         <Grid>
           <Grid.Row>
             <Grid.Column width={2} />
             <Grid.Column width={2}>{humidityCircle}</Grid.Column>
             <Grid.Column width={2}>{dustCircle}</Grid.Column>
-            <Grid.Column width={2} />
-            <Grid.Column width={8}>
-              <Controller
-                humidity="?"
-                dust="?"
-                airConditionChecked={this.state.isAirConditionOn}
-                airConditionOnFunction={this.turnOnAirConditionHandler}
-                airConditionOffFunction={this.turnOffAirConditionHandler}
-                airPurifierChecked={this.state.isAirPurifierOn}
-                airPurifierOnFunction={this.turnOnAirPurifierHandler}
-                airPurifierOffFunction={this.turnOffAirPurifierHandler}
-              />
-            </Grid.Column>
+            <Grid.Column width={1} />
+            <Grid.Column width={9}>{controller}</Grid.Column>
+          </Grid.Row>
+          <Grid.Row centered>
+            <Button onClick={this.request}>Simulate data</Button>
+            {deleteButton}
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={8}>
