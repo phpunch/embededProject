@@ -44,7 +44,7 @@ const percentageCircle = props => {
   let circularProgressbar = (
     <CircularProgressbar
       percentage={percentage}
-      text={`${percentage}`}
+      text={`${props.percentage}`}
       styles={style}
     />
   );

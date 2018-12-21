@@ -9,7 +9,7 @@ class Controller extends Component {
     return (
       <Card.Group>
         <Card >
-          <Card.Content header="Air Condition" />
+          <Card.Content header="Air Conditioner" />
           <Card.Content>
             <Image
               size="tiny"
